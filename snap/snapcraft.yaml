@@ -47,7 +47,6 @@ parts:
     build-packages:
       - curl
       - gcc
-      - git
       - libsqlite3-dev
       - libgtk-4-dev
       - libadwaita-1-dev
@@ -58,10 +57,11 @@ parts:
       case "$CRAFT_ARCH_BUILD_ON" in
         amd64) NIM_ARCH=linux_x64 ;;
         arm64) NIM_ARCH=linux_arm64 ;;
+        *) echo "Unsupported architecture: $CRAFT_ARCH_BUILD_ON" >&2; exit 1 ;;
       esac
       curl https://nim-lang.org/download/nim-2.2.12-${NIM_ARCH}.tar.xz -sSf -o nim.tar.xz
       tar -xJf nim.tar.xz
-      export PATH=$CRAFT_PART_SRC/nim-2.2.12/bin:$PATH
+      export PATH=$CRAFT_PART_BUILD/nim-2.2.12/bin:$PATH
       nim c -d:release --hints:off -o:albertina src/albertina.nim
       mkdir -p $CRAFT_PART_INSTALL/bin
       cp albertina $CRAFT_PART_INSTALL/bin/
