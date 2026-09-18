@@ -1,0 +1,59 @@
+name: albertina
+title: Albertina
+base: core24
+version: "0.1.0"
+contact: gatochalupa@gmail.com
+website: https://gatochalupa.com
+source-code: https://codeberg.org/GatoChalupa/albertina
+issues: https://codeberg.org/GatoChalupa/albertina/issues
+license: MIT
+donation: https://liberapay.com/lapisdecor/donate
+
+summary: A personal dictionary for personal definitions.
+description: |
+  Albertina is a simple personal dictionary application built with Nim, Owlkettle (GTK4), and SQLite. It can also be used as a notebook.
+
+icon: snap/gui/albertina.png
+grade: stable
+confinement: strict
+
+lint:
+  ignore:
+    - library:
+        - usr/lib/*/libsqlite3.so.*
+
+apps:
+  albertina:
+    command: bin/albertina
+    extensions: [gnome]
+    plugs:
+      - home
+      - network
+    #desktop: snap/gui/albertina.desktop
+    common-id: com.gatochalupa.albertina
+
+parts:
+  albertina:
+    plugin: nil
+    source: .
+    build-packages:
+      - curl
+      - gcc
+      - git
+      - libsqlite3-dev
+      - libgtk-4-dev
+      - libadwaita-1-dev
+    stage-packages:
+      - libsqlite3-0
+    override-build: |
+      set -e
+      export CHOOSENIM_NO_ANALYTICS=1
+      curl https://nim-lang.org/choosenim/init.sh -sSf > init.sh
+      sh init.sh -y
+      export PATH=$HOME/.nimble/bin:$PATH
+      nimble build -y
+      mkdir -p $CRAFT_PART_INSTALL/bin
+      cp albertina $CRAFT_PART_INSTALL/bin/
+      #mkdir -p $CRAFT_PART_INSTALL/snap/gui
+      #cp snap/gui/albertina.desktop $CRAFT_PART_INSTALL/snap/gui/
+      #cp snap/gui/albertina.png $CRAFT_PART_INSTALL/snap/gui/
