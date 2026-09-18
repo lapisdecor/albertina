@@ -47,11 +47,10 @@ parts:
       - libsqlite3-0
     override-build: |
       set -e
-      export CHOOSENIM_NO_ANALYTICS=1
-      curl https://nim-lang.org/choosenim/init.sh -sSf > init.sh
-      sh init.sh -y
-      export PATH=$HOME/.nimble/bin:$PATH
-      nimble build -y
+      curl https://nim-lang.org/download/nim-2.2.4-linux_x64.tar.xz -sSf -o nim.tar.xz
+      tar -xJf nim.tar.xz
+      export PATH=$CRAFT_PART_SRC/nim-2.2.4/bin:$PATH
+      nim c -d:release --hints:off -o:albertina src/albertina.nim
       mkdir -p $CRAFT_PART_INSTALL/bin
       cp albertina $CRAFT_PART_INSTALL/bin/
       #mkdir -p $CRAFT_PART_INSTALL/snap/gui

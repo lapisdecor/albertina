@@ -1,0 +1,41 @@
+name: test
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - 'README**'
+      - '**.md'
+  pull_request:
+    paths-ignore:
+      - 'README**'
+      - '**.md'
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - ubuntu-22.04
+          # - windows-latest
+          # - macOS-latest
+        nim:
+          - '2.0.0'
+          - 'stable'
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup dependencies
+        run: |
+          sudo apt update -y
+          sudo apt install -y libgtk-4-dev libadwaita-1-dev
+      - uses: jiro4989/setup-nim-action@v1
+        with:
+          nim-version: ${{ matrix.nim }}
+      - run: nimble install -Y
+      - name: Setup config.nims
+        run: |
+          # For referencing latest source code
+          echo 'switch("path", "$projectDir/..")' > examples/config.nims
+      - run: nimble -d:github examples
